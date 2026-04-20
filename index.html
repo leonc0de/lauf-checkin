@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wochen-Check-in · Leon</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0f172a;--card:#1e293b;--card2:#243044;--border:#334155;--accent:#f97316;--accent-dim:#c2570f;--accent-glow:rgba(249,115,22,0.15);--text:#e2e8f0;--muted:#94a3b8;--dim:#64748b;--green:#22c55e;--red:#ef4444;--yellow:#eab308;--sw:64px;--fd:'Barlow Condensed',sans-serif;--fb:'DM Sans',sans-serif;--r:12px;--rs:8px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--fb);background:var(--bg);color:var(--text);min-height:100vh;display:flex}
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");opacity:.025;pointer-events:none;z-index:9999}
+
+/* SIDEBAR */
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:var(--sw);background:var(--card);border-right:1px solid var(--border);display:flex;flex-direction:column;align-items:center;padding:12px 0;gap:2px;z-index:100;overflow-y:auto}
+.sb-logo{font-family:var(--fd);font-size:20px;font-weight:800;color:var(--accent);margin-bottom:8px;writing-mode:vertical-rl;transform:rotate(180deg);padding:6px 0;letter-spacing:1px}
+.nb{display:flex;flex-direction:column;align-items:center;gap:3px;width:52px;padding:7px 4px;border:none;background:transparent;color:var(--dim);cursor:pointer;border-radius:var(--rs);transition:all .2s;text-decoration:none;font-size:16px}
+.nb .lbl{font-family:var(--fd);font-size:8px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;line-height:1}
+.nb:hover{background:var(--accent-glow);color:var(--text)}
+.nb.active{background:var(--accent-glow);color:var(--accent)}
+.pr-wrap{margin-top:auto;padding:12px 0;display:flex;flex-direction:column;align-items:center;gap:3px}
+.pr-ring{width:40px;height:40px;position:relative}
+.pr-ring svg{transform:rotate(-90deg)}
+.pr-ring .pr-bg{stroke:var(--border);fill:none;stroke-width:3}
+.pr-ring .pr-fill{stroke:var(--accent);fill:none;stroke-width:3;stroke-linecap:round;stroke-dasharray:113;stroke-dashoffset:113;transition:stroke-dashoffset .5s ease}
+.pr-pct{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-size:11px;font-weight:700;color:var(--accent)}
+.pr-lbl{font-size:9px;color:var(--dim);font-family:var(--fd);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+
+/* MAIN */
+.main{margin-left:var(--sw);flex:1;padding:28px 36px;max-width:1060px}
+
+/* SECTIONS */
+.section{margin-bottom:44px;scroll-margin-top:20px}
+.sh{display:flex;align-items:center;gap:10px;margin-bottom:18px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.si{font-size:22px;line-height:1}
+.st{font-family:var(--fd);font-size:26px;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
+.ss{font-size:12px;color:var(--muted);margin-left:auto}
+
+/* CARD */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:18px;margin-bottom:14px}
+.card-title{font-family:var(--fd);font-size:17px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--accent);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.card-al{border-left:3px solid var(--accent);padding-left:14px}
+
+/* GRID */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.g4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:14px}
+.g6{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
+.fg{display:flex;flex-direction:column;gap:5px}
+.lbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--muted)}
+
+/* INPUTS */
+input[type=text],input[type=number],input[type=date],select,textarea{background:var(--bg);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-family:var(--fb);font-size:13px;padding:7px 10px;width:100%;transition:border-color .2s,box-shadow .2s;outline:none}
+input[type=text]:focus,input[type=number]:focus,input[type=date]:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-glow)}
+input[type=number]{-moz-appearance:textfield}
+input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
+select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%2394a3b8' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;padding-right:24px}
+select option{background:var(--card)}
+textarea{resize:none;min-height:64px;line-height:1.6}
+
+/* RANGE */
+.sw-wrap{display:flex;align-items:center;gap:10px}
+.sv{font-family:var(--fd);font-size:20px;font-weight:700;color:var(--accent);min-width:28px;text-align:right}
+input[type=range]{flex:1;-webkit-appearance:none;height:4px;border-radius:2px;outline:none;cursor:pointer;background:linear-gradient(to right,var(--accent) var(--pct,0%),var(--border) var(--pct,0%))}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--accent);cursor:pointer;border:2px solid var(--bg);box-shadow:0 0 8px rgba(249,115,22,.4);transition:transform .1s}
+input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2)}
+input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:var(--accent);cursor:pointer;border:2px solid var(--bg)}
+input[type=range].effort{background:linear-gradient(to right,#22c55e 0%,#eab308 50%,#ef4444 100%);position:relative}
+input[type=range].effort{background:linear-gradient(to right,#22c55e calc(var(--pct,50%) * 0.1),#eab308 calc(var(--pct,50%)),#ef4444 100%)}
+input[type=range].inj-sl{height:3px}
+input[type=range].inj-sl::-webkit-slider-thumb{width:14px;height:14px}
+
+/* PLAN-WOCHE BUBBLE */
+.pwrap{position:relative;padding-top:22px}
+.pbubble{position:absolute;top:0;transform:translateX(-50%);background:var(--accent);color:#fff;padding:2px 7px;border-radius:4px;font-family:var(--fd);font-size:12px;font-weight:700;pointer-events:none;white-space:nowrap}
+.pbubble::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:4px solid transparent;border-top-color:var(--accent)}
+
+/* PILLS */
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pills input[type=radio],.pills input[type=checkbox]{display:none;width:auto}
+.pills label{display:inline-flex;align-items:center;gap:4px;padding:5px 13px;border-radius:100px;border:1px solid var(--border);color:var(--muted);font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;background:var(--bg);user-select:none}
+.pills label:hover{border-color:var(--accent);color:var(--text)}
+.pills input[type=radio]:checked+label,.pills input[type=checkbox]:checked+label{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.pills.block label{padding:7px 18px;font-family:var(--fd);font-size:14px;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
+
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--dim);text-align:left;padding:5px 6px;border-bottom:1px solid var(--border)}
+.tbl td{padding:5px 3px;vertical-align:middle;border-bottom:1px solid rgba(51,65,85,.35)}
+.tbl tr:last-child td{border-bottom:none}
+.tbl .rl{font-family:var(--fd);font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;padding-right:10px}
+.tbl input,.tbl select{padding:5px 7px;font-size:12px}
+
+/* 7-DAY GRID */
+.dg{display:grid;grid-template-columns:repeat(7,1fr);gap:7px}
+.dc{display:flex;flex-direction:column;gap:3px}
+.dl{font-family:var(--fd);font-size:10px;font-weight:700;text-transform:uppercase;color:var(--dim);letter-spacing:.5px;text-align:center}
+.dc input{text-align:center;padding:7px 3px}
+
+/* ADHERENCE */
+.adh-circles{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.adh-day{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer}
+.adh-circle{width:40px;height:40px;border-radius:50%;border:2px solid var(--border);background:var(--bg);display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-size:12px;font-weight:700;color:var(--dim);transition:all .2s;cursor:pointer;user-select:none}
+.adh-day.filled .adh-circle{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 0 12px var(--accent-glow);font-size:16px}
+.adh-day.filled .adh-circle::before{content:'✓'}
+.adh-day:not(.filled) .adh-circle{content:attr(data-d)}
+.adh-count{font-family:var(--fd);font-size:32px;font-weight:800;color:var(--accent);line-height:1}
+.adh-lbl{font-size:11px;color:var(--muted)}
+
+/* STAT */
+.stat{background:var(--bg);border:1px solid var(--border);border-radius:var(--rs);padding:10px 14px;text-align:center}
+.stat-v{font-family:var(--fd);font-size:28px;font-weight:800;color:var(--accent);line-height:1}
+.stat-v.pos{color:var(--green)}
+.stat-v.neg{color:var(--red)}
+.stat-l{font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+
+/* TOGGLE */
+.tgl-wrap{display:flex;align-items:center;gap:10px}
+.tgl{position:relative;width:42px;height:23px;flex-shrink:0}
+.tgl input{opacity:0;width:0;height:0}
+.tgl-sl{position:absolute;inset:0;background:var(--border);border-radius:23px;cursor:pointer;transition:background .2s}
+.tgl-sl::before{content:'';position:absolute;width:17px;height:17px;left:3px;top:3px;background:#fff;border-radius:50%;transition:transform .2s}
+.tgl input:checked+.tgl-sl{background:var(--accent)}
+.tgl input:checked+.tgl-sl::before{transform:translateX(19px)}
+.tgl-lbl{font-size:13px;color:var(--muted)}
+
+/* PROGRESS ITEMS */
+.pi-list{display:flex;flex-direction:column;gap:8px}
+.pi{display:flex;align-items:center;gap:12px;background:var(--bg);border:1px solid var(--border);border-radius:var(--rs);padding:12px 14px;cursor:pointer;transition:all .2s;user-select:none}
+.pi input{display:none}
+.pi-icon{font-size:18px;flex-shrink:0;width:28px;text-align:center}
+.pi-text{flex:1;font-size:13px;color:var(--muted)}
+.pi-check{width:22px;height:22px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;color:transparent;transition:all .2s;flex-shrink:0}
+.pi:has(input:checked){border-color:var(--accent);background:var(--accent-glow)}
+.pi:has(input:checked) .pi-text{color:var(--text)}
+.pi:has(input:checked) .pi-check{background:var(--accent);border-color:var(--accent);color:#fff}
+
+/* NULL BADGE */
+.null-badge{display:none;background:linear-gradient(135deg,var(--green),#16a34a);color:#fff;border-radius:var(--r);padding:11px 18px;font-family:var(--fd);font-size:18px;font-weight:700;letter-spacing:1px;text-align:center;margin-top:10px;box-shadow:0 4px 20px rgba(34,197,94,.3)}
+.null-badge.vis{display:block}
+
+/* PAGE HEADER */
+.ph{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:22px 26px;margin-bottom:28px;position:relative;overflow:hidden}
+.ph::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(to right,var(--accent),#fbbf24,var(--accent))}
+.ph-title{font-family:var(--fd);font-size:38px;font-weight:800;letter-spacing:1px;text-transform:uppercase;line-height:1}
+.ph-sub{font-size:12px;color:var(--muted);margin-top:4px}
+.ph-row{display:flex;align-items:flex-start;gap:24px;flex-wrap:wrap;margin-top:18px}
+
+/* TOAST */
+.toast{position:fixed;bottom:28px;right:28px;background:var(--green);color:#fff;padding:10px 18px;border-radius:var(--r);font-weight:600;font-size:13px;opacity:0;transform:translateY(8px);transition:opacity .3s,transform .3s;z-index:10000;pointer-events:none}
+.toast.show{opacity:1;transform:translateY(0)}
+
+/* EXPORT BTN */
+.ebtn{background:var(--accent);color:#fff;border:none;border-radius:var(--rs);padding:9px 18px;font-family:var(--fd);font-size:14px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:7px}
+.ebtn:hover{background:#ea6d0a;transform:translateY(-1px);box-shadow:0 4px 16px rgba(249,115,22,.4)}
+
+/* PACE BADGE */
+.pace-badge{display:inline-flex;align-items:center;gap:3px;background:var(--accent-glow);border:1px solid var(--accent-dim);color:var(--accent);font-size:9px;font-weight:700;padding:1px 6px;border-radius:100px;text-transform:uppercase;letter-spacing:.5px;cursor:pointer;transition:all .15s;vertical-align:middle;margin-left:4px}
+.pace-badge.manual{background:rgba(100,116,139,.15);border-color:var(--border);color:var(--muted)}
+
+/* BLOCK INFO */
+.block-info{display:none;margin-top:10px;padding:12px 14px;background:var(--bg);border:1px solid var(--border);border-radius:var(--rs);font-size:12px;line-height:1.6}
+.block-info.vis{display:block}
+.block-info strong{color:var(--accent)}
+.block-def{margin-bottom:6px;display:flex;gap:8px}
+.block-def:last-child{margin-bottom:0}
+.block-tag{font-family:var(--fd);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:2px 8px;border-radius:100px;flex-shrink:0;align-self:flex-start;margin-top:1px}
+.block-tag.base{background:rgba(34,197,94,.15);color:#22c55e}
+.block-tag.build{background:rgba(234,179,8,.15);color:#eab308}
+.block-tag.sharp{background:rgba(249,115,22,.15);color:var(--accent)}
+
+/* RUN DAY SELECTOR */
+.run-day-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:12px;flex-wrap:wrap}
+.run-type-label{font-family:var(--fd);font-size:15px;font-weight:700;letter-spacing:.5px;color:var(--accent);text-transform:uppercase}
+.day-pills{display:flex;gap:4px;flex-wrap:wrap}
+.day-pills input[type=radio]{display:none}
+.day-pills label{padding:4px 10px;border-radius:100px;border:1px solid var(--border);color:var(--dim);font-family:var(--fd);font-size:12px;font-weight:700;cursor:pointer;transition:all .15s;background:var(--bg);user-select:none}
+.day-pills label:hover{border-color:var(--accent);color:var(--text)}
+.day-pills input[type=radio]:checked+label{background:var(--accent);border-color:var(--accent);color:#fff}
+
+/* SPLITS */
+.splits-btn{background:none;border:1px dashed var(--border);border-radius:var(--rs);color:var(--muted);font-size:12px;font-family:var(--fb);cursor:pointer;padding:7px 12px;width:100%;text-align:left;transition:all .2s;margin-top:10px}
+.splits-btn:hover{border-color:var(--accent);color:var(--accent)}
+.splits-box{display:none;margin-top:8px}
+.splits-box.open{display:block}
+
+/* DIVIDER */
+.div{height:1px;background:var(--border);margin:14px 0}
+
+/* INJ PILLS */
+.ipills{display:flex;gap:3px}
+.ipills input[type=radio]{display:none}
+.ipills label{padding:3px 7px;border-radius:100px;border:1px solid var(--border);color:var(--dim);font-size:10px;cursor:pointer;transition:all .15s;background:var(--bg);user-select:none}
+.ipills input[type=radio]:checked+label{background:var(--accent);border-color:var(--accent);color:#fff}
+
+/* MOBILE NAV */
+.mob-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--border);z-index:100;padding:6px 0;justify-content:space-around}
+.mob-nav .nb{width:auto;padding:3px 6px;font-size:20px}
+
+@media(max-width:768px){
+  :root{--sw:0px}
+  .sidebar{display:none}
+  .mob-nav{display:flex}
+  .main{margin-left:0;padding:14px;padding-bottom:76px}
+  .g2,.g3,.g4{grid-template-columns:1fr}
+  .dg{grid-template-columns:repeat(4,1fr)}
+  .g6{grid-template-columns:repeat(3,1fr)}
+  .ph-row{gap:14px}
+}
+
+@media print{
+  body::after,.sidebar,.mob-nav,.toast,.ebtn,.splits-btn{display:none!important}
+  body{background:#fff;color:#000;font-size:11px}
+  .main{margin:0;padding:16px;max-width:100%}
+  .card{background:#fff;border:1px solid #ccc;break-inside:avoid}
+  .section{break-inside:avoid;margin-bottom:20px}
+  input,select,textarea{background:transparent!important;border:1px solid #ddd!important;color:#000!important}
+  .pills input:checked+label{background:#333!important;color:#fff!important;border-color:#333!important}
+  .splits-box{display:block!important}
+  .ph::before{display:none}
+  :root{--accent:#333;--text:#000;--muted:#555;--dim:#777;--bg:#fff;--card:#fff;--border:#ddd}
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sb-logo">KW</div>
+  <a href="#s1" class="nb active"><span>📋</span><span class="lbl">Info</span></a>
+  <a href="#s2" class="nb"><span>🏃</span><span class="lbl">Laufen</span></a>
+  <a href="#s3" class="nb"><span>🚴</span><span class="lbl">Rad</span></a>
+  <a href="#s4" class="nb"><span>🏋️</span><span class="lbl">Gym</span></a>
+  <a href="#s5" class="nb"><span>⚖️</span><span class="lbl">Körper</span></a>
+  <a href="#s6" class="nb"><span>😴</span><span class="lbl">Schlaf</span></a>
+  <a href="#s7" class="nb"><span>🥗</span><span class="lbl">Ernähr</span></a>
+  <a href="#s8" class="nb"><span>🧠</span><span class="lbl">Subjekt</span></a>
+  <a href="#s9" class="nb"><span>🩹</span><span class="lbl">Körper</span></a>
+  <a href="#s10" class="nb"><span>✅</span><span class="lbl">Progr</span></a>
+  <a href="#s11" class="nb"><span>💬</span><span class="lbl">Fragen</span></a>
+  <a href="#s12" class="nb"><span>📅</span><span class="lbl">Vorsch</span></a>
+  <div class="pr-wrap">
+    <div class="pr-ring">
+      <svg viewBox="0 0 40 40" width="40" height="40">
+        <circle class="pr-bg" cx="20" cy="20" r="18"/>
+        <circle class="pr-fill" id="progressCircle" cx="20" cy="20" r="18"/>
+      </svg>
+      <div class="pr-pct" id="progressPct">0%</div>
+    </div>
+    <span class="pr-lbl">Filled</span>
+  </div>
+</nav>
+
+<!-- MOBILE NAV -->
+<nav class="mob-nav">
+  <a href="#s1" class="nb">📋<span class="lbl">Info</span></a>
+  <a href="#s2" class="nb">🏃<span class="lbl">Laufen</span></a>
+  <a href="#s4" class="nb">🏋️<span class="lbl">Gym</span></a>
+  <a href="#s5" class="nb">⚖️<span class="lbl">Körper</span></a>
+  <a href="#s9" class="nb">🩹<span class="lbl">Wehweh</span></a>
+</nav>
+
+<main class="main">
+
+<!-- PAGE HEADER -->
+<div class="ph">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px">
+    <div>
+      <div class="ph-title">Wochen-Check-in</div>
+      <div class="ph-sub">Leon · Trainingsprotokoll · Wöchentlicher Bericht</div>
+    </div>
+    <button class="ebtn" onclick="exportPDF()">⬇ Als PDF exportieren</button>
+  </div>
+  <div class="ph-row">
+    <div class="fg" style="min-width:90px">
+      <label class="lbl">Kalenderwoche</label>
+      <input type="number" id="kw" min="1" max="53" placeholder="KW" style="font-family:var(--fd);font-size:22px;font-weight:800;text-align:center;padding:8px 10px">
+    </div>
+    <div class="fg" style="flex:1;min-width:180px">
+      <label class="lbl">Plan-Woche (1–12)</label>
+      <div class="pwrap">
+        <div class="pbubble" id="pwBubble" style="left:8.3%">1</div>
+        <input type="range" id="planWoche" min="1" max="12" value="1" oninput="updatePW(this)">
+      </div>
+    </div>
+    <div class="fg">
+      <label class="lbl">Block-Typ <span onclick="toggleBlockInfo()" style="cursor:pointer;color:var(--dim);font-size:10px;border:1px solid var(--border);border-radius:100px;padding:1px 6px;margin-left:4px;transition:color .15s" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--dim)'">? Was bedeutet das</span></label>
+      <div class="pills block">
+        <input type="radio" name="block" id="b_base" value="Base"><label for="b_base">Base</label>
+        <input type="radio" name="block" id="b_build" value="Build"><label for="b_build">Build</label>
+        <input type="radio" name="block" id="b_sharpen" value="Sharpen"><label for="b_sharpen">Sharpen</label>
+      </div>
+      <div class="block-info" id="blockInfo">
+        <div class="block-def"><span class="block-tag base">Base</span><span style="color:var(--muted)"><strong style="color:var(--text)">Grundlagenausdauer aufbauen.</strong> Niedriges Volumen, fast alles in Z1–Z2. Aerobe Basis, Fettverbrennung optimieren, Kadenz einschleifen. Keine harten Intervalle.</span></div>
+        <div class="block-def"><span class="block-tag build">Build</span><span style="color:var(--muted)"><strong style="color:var(--text)">Belastung steigern.</strong> Volumen steigt, erste intensive Quality-Sessions (Schwellenläufe, Tempoläufe). Laktattoleranz aufbauen, Long Runs länger werden.</span></div>
+        <div class="block-def"><span class="block-tag sharp">Sharpen</span><span style="color:var(--muted)"><strong style="color:var(--text)">Wettkampfschärfe herstellen.</strong> Volumen sinkt (Tapering), Intensität hoch — race-pace Intervalle, kurze schnelle Einheiten. Frische maximieren, Schärfe halten.</span></div>
+      </div>
+    </div>
+    <div class="fg">
+      <label class="lbl">Check-in Datum</label>
+      <input type="date" id="checkinDate">
+    </div>
+  </div>
+</div>
+
+<!-- S2: LAUFEN -->
+<section class="section" id="s2">
+  <div class="sh"><span class="si">🏃</span><span class="st">Lauf-Einheiten</span></div>
+
+  <!-- LAUF 1 -->
+  <div class="card card-al">
+    <div class="run-day-row">
+      <span class="run-type-label">🗓 Easy Run</span>
+      <div class="day-pills">
+        <input type="radio" name="r1_day" id="r1_dmo" value="Mo"><label for="r1_dmo">Mo</label>
+        <input type="radio" name="r1_day" id="r1_ddi" value="Di" checked><label for="r1_ddi">Di</label>
+        <input type="radio" name="r1_day" id="r1_dmi" value="Mi"><label for="r1_dmi">Mi</label>
+        <input type="radio" name="r1_day" id="r1_ddo" value="Do"><label for="r1_ddo">Do</label>
+        <input type="radio" name="r1_day" id="r1_dfr" value="Fr"><label for="r1_dfr">Fr</label>
+        <input type="radio" name="r1_day" id="r1_dsa" value="Sa"><label for="r1_dsa">Sa</label>
+        <input type="radio" name="r1_day" id="r1_dso" value="So"><label for="r1_dso">So</label>
+      </div>
+    </div>
+    <div class="g4" style="margin-bottom:14px">
+      <div class="fg"><label class="lbl">Distanz (km)</label><input type="number" id="r1_km" step="0.1" placeholder="0.0" oninput="calcPace('r1')"></div>
+      <div class="fg"><label class="lbl">Dauer (min)</label><input type="number" id="r1_min" placeholder="0" oninput="calcPace('r1')"></div>
+      <div class="fg" style="grid-column:span 2"><label class="lbl">Pace (mm:ss /km) <span class="pace-badge" id="r1_pbadge" onclick="togglePaceManual('r1')">⟳ auto</span></label><input type="text" id="r1_pace" placeholder="z.B. 5:30" oninput="setPaceManual('r1')"></div>
+    </div>
+    <div class="g4" style="margin-bottom:14px">
+      <div class="fg"><label class="lbl">Avg HR (bpm)</label><input type="number" id="r1_avhr" placeholder="140"></div>
+      <div class="fg"><label class="lbl">Max HR (bpm)</label><input type="number" id="r1_mxhr" placeholder="165"></div>
+      <div class="fg"><label class="lbl">Avg Kadenz (spm)</label><input type="number" id="r1_kad" placeholder="175"></div>
+      <div class="fg"><label class="lbl">Geplant</label><input type="text" id="r1_plan" placeholder="Easy Z2, 8km"></div>
+    </div>
+    <div class="g3" style="margin-bottom:14px">
+      <div class="fg">
+        <label class="lbl">Subjektive Anstrengung (1–10)</label>
+        <div class="sw-wrap">
+          <input type="range" class="effort" id="r1_eff" min="1" max="10" value="5" oninput="updateSlider(this)">
+          <span class="sv" id="r1_eff_v">5</span>
+        </div>
+      </div>
+      <div class="fg">
+        <label class="lbl">Atmung</label>
+        <div class="pills">
+          <input type="radio" name="r1_atm" id="r1_a1" value="Nase"><label for="r1_a1">👃 Nase</label>
+          <input type="radio" name="r1_atm" id="r1_a2" value="Teils"><label for="r1_a2">↔ Teils</label>
+          <input type="radio" name="r1_atm" id="r1_a3" value="Mund"><label for="r1_a3">👄 Mund</label>
+        </div>
+      </div>
+      <div class="fg">
+        <label class="lbl">Ziel erreicht?</label>
+        <div class="pills">
+          <input type="radio" name="r1_ziel" id="r1_z1" value="Ja"><label for="r1_z1">✓ Ja</label>
+          <input type="radio" name="r1_ziel" id="r1_z2" value="Knapp"><label for="r1_z2">~ Knapp</label>
+          <input type="radio" name="r1_ziel" id="r1_z3" value="Nein"><label for="r1_z3">✗ Nein</label>
+        </div>
+      </div>
+    </div>
+    <div class="fg"><label class="lbl">Gefühl / Notizen</label><textarea id="r1_notes" placeholder="Wie hat sich der Lauf angefühlt?"></textarea></div>
+  </div>
+
+  <!-- LAUF 2 -->
+  <div class="card card-al">
+    <div class="run-day-row">
+      <span class="run-type-label">⚡ Quality Run</span>
+      <div class="day-pills">
+        <input type="radio" name="r2_day" id="r2_dmo" value="Mo"><label for="r2_dmo">Mo</label>
+        <input type="radio" name="r2_day" id="r2_ddi" value="Di"><label for="r2_ddi">Di</label>
+        <input type="radio" name="r2_day" id="r2_dmi" value="Mi"><label for="r2_dmi">Mi</label>
+        <input type="radio" name="r2_day" id="r2_ddo" value="Do" checked><label for="r2_ddo">Do</label>
+        <input type="radio" name="r2_day" id="r2_dfr" value="Fr"><label for="r2_dfr">Fr</label>
+        <input type="radio" name="r2_day" id="r2_dsa" value="Sa"><label for="r2_dsa">Sa</label>
+        <input type="radio" name="r2_day" id="r2_dso" value="So"><label for="r2_dso">So</label>
+      </div>
+    </div>
+    <div class="g4" style="margin-bottom:14px">
+      <div class="fg"><label class="lbl">Distanz (km)</label><input type="number" id="r2_km" step="0.1" placeholder="0.0" oninput="calcPace('r2')"></div>
+      <div class="fg"><label class="lbl">Dauer (min)</label><input type="number" id="r2_min" placeholder="0" oninput="calcPace('r2')"></div>
+      <div class="fg" style="grid-column:span 2"><label class="lbl">Pace (avg mm:ss /km) <span class="pace-badge" id="r2_pbadge" onclick="togglePaceManual('r2')">⟳ auto</span></label><input type="text" id="r2_pace" placeholder="z.B. 4:10" oninput="setPaceManual('r2')"></div>
+    </div>
+    <div class="g4" style="margin-bottom:14px">
+      <div class="fg"><label class="lbl">Avg HR (bpm)</label><input type="number" id="r2_avhr" placeholder="155"></div>
+      <div class="fg"><label class="lbl">Max HR (bpm)</label><input type="number" id="r2_mxhr" placeholder="178"></div>
+      <div class="fg"><label class="lbl">Avg Kadenz (spm)</label><input type="number" id="r2_kad" placeholder="182"></div>
+      <div class="fg"><label class="lbl">Geplant</label><input type="text" id="r2_plan" placeholder="5×1km @4:00/km"></div>
+    </div>
+    <div class="g3" style="margin-bottom:14px">
+      <div class="fg">
+        <label class="lbl">Subjektive Anstrengung (1–10)</label>
+        <div class="sw-wrap">
+          <input type="range" class="effort" id="r2_eff" min="1" max="10" value="7" oninput="updateSlider(this)">
+          <span class="sv" id="r2_eff_v">7</span>
+        </div>
+      </div>
+      <div class="fg">
+        <label class="lbl">Atmung</label>
+        <div class="pills">
+          <input type="radio" name="r2_atm" id="r2_a1" value="Nase"><label for="r2_a1">👃 Nase</label>
+          <input type="radio" name="r2_atm" id="r2_a2" value="Teils"><label for="r2_a2">↔ Teils</label>
+          <input type="radio" name="r2_atm" id="r2_a3" value="Mund"><label for="r2_a3">👄 Mund</label>
+        </div>
+      </div>
+      <div class="fg">
+        <label class="lbl">Ziel-Paces getroffen?</label>
+        <div class="pills">
+          <input type="radio" name="r2_ziel" id="r2_z1" value="Ja"><label for="r2_z1">✓ Ja</label>
+          <input type="radio" name="r2_ziel" id="r2_z2" value="Knapp"><label for="r2_z2">~ Knapp</label>
+          <input type="radio" name="r2_ziel" id="r2_z3" value="Nein"><label for="r2_z3">✗ Nein</label>
+        </div>
+      </div>
+    </div>
+    <button class="splits-btn" onclick="toggleSplits('splits2')">+ Intervall-Splits anzeigen</button>
+    <div class="splits-box" id="splits2">
+      <table class="tbl" style="margin-top:8px">
+        <thead><tr><th>#</th><th>Pace (mm:ss/km)</th><th>HR (bpm)</th><th>Notiz</th></tr></thead>
+        <tbody>
+          <tr><td class="rl">1</td><td><input type="text" id="r2_s1p" placeholder="4:00"></td><td><input type="number" id="r2_s1h" placeholder="170"></td><td><input type="text" id="r2_s1n" placeholder=""></td></tr>
+          <tr><td class="rl">2</td><td><input type="text" id="r2_s2p" placeholder="4:00"></td><td><input type="number" id="r2_s2h" placeholder="172"></td><td><input type="text" id="r2_s2n" placeholder=""></td></tr>
+          <tr><td class="rl">3</td><td><input type="text" id="r2_s3p" placeholder="3:58"></td><td><input type="number" id="r2_s3h" placeholder="175"></td><td><input type="text" id="r2_s3n" placeholder=""></td></tr>
+          <tr><td class="rl">4</td><td><input type="text" id="r2_s4p" placeholder="3:57"></td><td><input type="number" id="r2_s4h" placeholder="176"></td><td><input type="text" id="r2_s4n" placeholder=""></td></tr>
+          <tr><td class="rl">5</td><td><input type="text" id="r2_s5p" placeholder="3:55"></td><td><input type="number" id="r2_s5h" placeholder="178"></td><td><input type="text" id="r2_s5n" placeholder=""></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="fg" style="margin-top:12px"><label class="lbl">Gefühl / Notizen</label><textarea id="r2_notes" placeholder="Wie war die Quality-Session?"></textarea></div>
+  </div>
+
+  <!-- LAUF 3 -->
+  <div class="card card-al">
+    <div class="run-day-row">
+      <span class="run-type-label">🕐 Long Run</span>
+      <div class="day-pills">
+        <input type="radio" name="r3_day" id="r3_dmo" value="Mo"><label for="r3_dmo">Mo</label>
+        <input type="radio" name="r3_day" id="r3_ddi" value="Di"><label for="r3_ddi">Di</label>
+        <input type="radio" name="r3_day" id="r3_dmi" value="Mi"><label for="r3_dmi">Mi</label>
+        <input type="radio" name="r3_day" id="r3_ddo" value="Do"><label for="r3_ddo">Do</label>
+        <input type="radio" name="r3_day" id="r3_dfr" value="Fr"><label for="r3_dfr">Fr</label>
+        <input type="radio" name="r3_day" id="r3_dsa" value="Sa" checked><label for="r3_dsa">Sa</label>
+        <input type="radio" name="r3_day" id="r3_dso" value="So"><label for="r3_dso">So</label>
+      </div>
+    </div>
+    <div class="g4" style="margin-bottom:14px">
+      <div class="fg"><label class="lbl">Distanz (km)</label><input type="number" id="r3_km" step="0.1" placeholder="0.0" oninput="calcPace('r3')"></div>
+      <div class="fg"><label class="lbl">Dauer (min)</label><input type="number" id="r3_min" placeholder="0" oninput="calcPace('r3')"></div>
+      <div class="fg" style="grid-column:span 2"><label class="lbl">Pace (avg mm:ss /km) <span class="pace-badge" id="r3_pbadge" onclick="togglePaceManual('r3')">⟳ auto</span></label><input type="text" id="r3_pace" placeholder="z.B. 5:45" oninput="setPaceManual('r3')"></div>
+    </div>
+    <div class="g4" style="margin-bottom:14px">
+      <div class="fg"><label class="lbl">Avg HR (bpm)</label><input type="number" id="r3_avhr" placeholder="145"></div>
+      <div class="fg"><label class="lbl">Max HR (bpm)</label><input type="number" id="r3_mxhr" placeholder="162"></div>
+      <div class="fg"><label class="lbl">Avg Kadenz (spm)</label><input type="number" id="r3_kad" placeholder="176"></div>
+      <div class="fg"><label class="lbl">HR-Drift Start→Ende</label>
+        <div style="display:flex;gap:6px">
+          <input type="number" id="r3_hrd1" placeholder="140" style="flex:1">
+          <span style="display:flex;align-items:center;color:var(--dim)">→</span>
+          <input type="number" id="r3_hrd2" placeholder="155" style="flex:1">
+        </div>
+      </div>
+    </div>
+    <div class="g3" style="margin-bottom:14px">
+      <div class="fg">
+        <label class="lbl">Subjektive Anstrengung (1–10)</label>
+        <div class="sw-wrap">
+          <input type="range" class="effort" id="r3_eff" min="1" max="10" value="6" oninput="updateSlider(this)">
+          <span class="sv" id="r3_eff_v">6</span>
+        </div>
+      </div>
+      <div class="fg">
+        <label class="lbl">Atmung</label>
+        <div class="pills">
+          <input type="radio" name="r3_atm" id="r3_a1" value="Nase"><label for="r3_a1">👃 Nase</label>
+          <input type="radio" name="r3_atm" id="r3_a2" value="Teils"><label for="r3_a2">↔ Teils</label>
+          <input type="radio" name="r3_atm" id="r3_a3" value="Mund"><label for="r3_a3">👄 Mund</label>
+        </div>
+      </div>
+      <div class="fg">
+        <label class="lbl">Fueling</label>
+        <div class="pills">
+          <input type="radio" name="r3_fuel" id="r3_f1" value="Nichts"><label for="r3_f1">Nichts</label>
+          <input type="radio" name="r3_fuel" id="r3_f2" value="Wasser"><label for="r3_f2">💧 Wasser</label>
+          <input type="radio" name="r3_fuel" id="r3_f3" value="Gel"><label for="r3_f3">⚡ Gel</label>
+        </div>
+      </div>
+    </div>
+    <div class="g2" style="margin-bottom:14px">
+      <div class="fg">
+        <label class="lbl">Geplant</label>
+        <input type="text" id="r3_plan" placeholder="20km Z2">
+      </div>
+      <div class="fg">
+        <label class="lbl">Ziel erreicht?</label>
+        <div class="pills">
+          <input type="radio" name="r3_ziel" id="r3_z1" value="Ja"><label for="r3_z1">✓ Ja</label>
+          <input type="radio" name="r3_ziel" id="r3_z2" value="Knapp"><label for="r3_z2">~ Knapp</label>
+          <input type="radio" name="r3_ziel" id="r3_z3" value="Nein"><label for="r3_z3">✗ Nein</label>
+        </div>
+      </div>
+    </div>
+    <div class="fg"><label class="lbl">Gefühl / Notizen</label><textarea id="r3_notes" placeholder="Long Run Zusammenfassung..."></textarea></div>
+  </div>
+</section>
+
+<!-- S3: RAD -->
+<section class="section" id="s3">
+  <div class="sh"><span class="si">🚴</span><span class="st">Rad-Einheiten</span><span class="ss" id="cycTotal">Gesamt: — km</span></div>
+  <div class="card">
+    <table class="tbl">
+      <thead><tr><th>Tag</th><th>km</th><th>Dauer</th><th>Avg HR</th><th>Intensität</th><th>Notizen</th></tr></thead>
+      <tbody>
+        <tr><td class="rl">Mo</td><td><input type="number" id="cy_mo_km" step="0.1" oninput="updateCycTotal()"></td><td><input type="text" id="cy_mo_dur" placeholder="hh:mm"></td><td><input type="number" id="cy_mo_hr"></td><td><select id="cy_mo_int"><option value="">—</option><option>Z1</option><option>Z2</option><option>Z3</option></select></td><td><input type="text" id="cy_mo_n" placeholder="Notiz"></td></tr>
+        <tr><td class="rl">Mi</td><td><input type="number" id="cy_mi_km" step="0.1" oninput="updateCycTotal()"></td><td><input type="text" id="cy_mi_dur" placeholder="hh:mm"></td><td><input type="number" id="cy_mi_hr"></td><td><select id="cy_mi_int"><option value="">—</option><option>Z1</option><option>Z2</option><option>Z3</option></select></td><td><input type="text" id="cy_mi_n" placeholder="Notiz"></td></tr>
+        <tr><td class="rl">Fr</td><td><input type="number" id="cy_fr_km" step="0.1" oninput="updateCycTotal()"></td><td><input type="text" id="cy_fr_dur" placeholder="hh:mm"></td><td><input type="number" id="cy_fr_hr"></td><td><select id="cy_fr_int"><option value="">—</option><option>Z1</option><option>Z2</option><option>Z3</option></select></td><td><input type="text" id="cy_fr_n" placeholder="Notiz"></td></tr>
+        <tr><td class="rl">So</td><td><input type="number" id="cy_so_km" step="0.1" oninput="updateCycTotal()"></td><td><input type="text" id="cy_so_dur" placeholder="hh:mm"></td><td><input type="number" id="cy_so_hr"></td><td><select id="cy_so_int"><option value="">—</option><option>Z1</option><option>Z2</option><option>Z3</option></select></td><td><input type="text" id="cy_so_n" placeholder="Notiz"></td></tr>
+        <tr><td class="rl">Weitere</td><td><input type="number" id="cy_ex_km" step="0.1" oninput="updateCycTotal()"></td><td><input type="text" id="cy_ex_dur" placeholder="hh:mm"></td><td><input type="number" id="cy_ex_hr"></td><td><select id="cy_ex_int"><option value="">—</option><option>Z1</option><option>Z2</option><option>Z3</option></select></td><td><input type="text" id="cy_ex_n" placeholder="Notiz"></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- S4: GYM -->
+<section class="section" id="s4">
+  <div class="sh"><span class="si">🏋️</span><span class="st">Gym-Einheiten</span></div>
+  <div class="card">
+    <table class="tbl">
+      <thead><tr><th>Tag / Split</th><th>RIR Ø</th><th>Schlüsselübung + Gewicht/Wdh</th><th>Gefühl (1–10)</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="rl">Mo · Push</td>
+          <td><input type="number" id="gym_mo_rir" min="0" max="5" style="width:60px"></td>
+          <td><input type="text" id="gym_mo_ex" placeholder="Bench Press 80kg × 8"></td>
+          <td>
+            <div class="sw-wrap">
+              <input type="range" id="gym_mo_feel" min="1" max="10" value="7" style="width:80px" oninput="updateSlider(this)">
+              <span class="sv" id="gym_mo_feel_v">7</span>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="rl">Mi · Pull</td>
+          <td><input type="number" id="gym_mi_rir" min="0" max="5" style="width:60px"></td>
+          <td><input type="text" id="gym_mi_ex" placeholder="Pull-ups BW × 10"></td>
+          <td>
+            <div class="sw-wrap">
+              <input type="range" id="gym_mi_feel" min="1" max="10" value="7" style="width:80px" oninput="updateSlider(this)">
+              <span class="sv" id="gym_mi_feel_v">7</span>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="rl">Fr · Legs</td>
+          <td><input type="number" id="gym_fr_rir" min="0" max="5" style="width:60px"></td>
+          <td><input type="text" id="gym_fr_ex" placeholder="Squat 100kg × 5"></td>
+          <td>
+            <div class="sw-wrap">
+              <input type="range" id="gym_fr_feel" min="1" max="10" value="7" style="width:80px" oninput="updateSlider(this)">
+              <span class="sv" id="gym_fr_feel_v">7</span>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="rl">Weitere</td>
+          <td><input type="number" id="gym_ex_rir" min="0" max="5" style="width:60px"></td>
+          <td><input type="text" id="gym_ex_ex" placeholder=""></td>
+          <td>
+            <div class="sw-wrap">
+              <input type="range" id="gym_ex_feel" min="1" max="10" value="7" style="width:80px" oninput="updateSlider(this)">
+              <span class="sv" id="gym_ex_feel_v">7</span>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="div"></div>
+    <div class="g2">
+      <div class="fg">
+        <label class="lbl">Leistungs-Trend vs. Vorwoche</label>
+        <div class="pills">
+          <input type="radio" name="gym_trend" id="gt1" value="Besser"><label for="gt1">↑ Besser</label>
+          <input type="radio" name="gym_trend" id="gt2" value="Gleich"><label for="gt2">→ Gleich</label>
+          <input type="radio" name="gym_trend" id="gt3" value="Schlechter"><label for="gt3">↓ Schlechter</label>
+        </div>
+      </div>
+      <div class="fg">
+        <label class="lbl">Kraft-Drift bemerkt?</label>
+        <div class="tgl-wrap">
+          <label class="tgl"><input type="checkbox" id="gym_drift_toggle" onchange="toggleDrift(this)"><span class="tgl-sl"></span></label>
+          <span class="tgl-lbl">Ja / Nein</span>
+        </div>
+        <input type="text" id="gym_drift_text" placeholder="Wo? (z.B. Squat linke Seite)" style="display:none;margin-top:6px">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- S5: KÖRPER-METRIKEN -->
+<section class="section" id="s5">
+  <div class="sh"><span class="si">⚖️</span><span class="st">Körper-Metriken</span></div>
+  <div class="card">
+    <div class="card-title">Gewicht (kg) — täglich nüchtern</div>
+    <div class="dg" style="margin-bottom:14px">
+      <div class="dc"><div class="dl">Mo</div><input type="number" id="wt_mo" step="0.1" placeholder="—" oninput="updateWeightCalcs()"></div>
+      <div class="dc"><div class="dl">Di</div><input type="number" id="wt_di" step="0.1" placeholder="—" oninput="updateWeightCalcs()"></div>
+      <div class="dc"><div class="dl">Mi</div><input type="number" id="wt_mi" step="0.1" placeholder="—" oninput="updateWeightCalcs()"></div>
+      <div class="dc"><div class="dl">Do</div><input type="number" id="wt_do" step="0.1" placeholder="—" oninput="updateWeightCalcs()"></div>
+      <div class="dc"><div class="dl">Fr</div><input type="number" id="wt_fr" step="0.1" placeholder="—" oninput="updateWeightCalcs()"></div>
+      <div class="dc"><div class="dl">Sa</div><input type="number" id="wt_sa" step="0.1" placeholder="—" oninput="updateWeightCalcs()"></div>
+      <div class="dc"><div class="dl">So</div><input type="number" id="wt_so" step="0.1" placeholder="—" oninput="updateWeightCalcs()"></div>
+    </div>
+    <div class="g3">
+      <div class="stat"><div class="stat-v" id="wt_avg">—</div><div class="stat-l">7-Tage-Mittel</div></div>
+      <div class="fg"><label class="lbl">Vorwoche-Mittel (kg)</label><input type="number" id="wt_prev" step="0.1" placeholder="75.0" oninput="updateWeightCalcs()"></div>
+      <div class="stat"><div class="stat-v" id="wt_drift">—</div><div class="stat-l">Drift vs. Vorwoche</div></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Resting HR (bpm) — direkt nach Aufwachen</div>
+    <div class="dg" style="margin-bottom:14px">
+      <div class="dc"><div class="dl">Mo</div><input type="number" id="rhr_mo" placeholder="—" oninput="updateRHRCalcs()"></div>
+      <div class="dc"><div class="dl">Di</div><input type="number" id="rhr_di" placeholder="—" oninput="updateRHRCalcs()"></div>
+      <div class="dc"><div class="dl">Mi</div><input type="number" id="rhr_mi" placeholder="—" oninput="updateRHRCalcs()"></div>
+      <div class="dc"><div class="dl">Do</div><input type="number" id="rhr_do" placeholder="—" oninput="updateRHRCalcs()"></div>
+      <div class="dc"><div class="dl">Fr</div><input type="number" id="rhr_fr" placeholder="—" oninput="updateRHRCalcs()"></div>
+      <div class="dc"><div class="dl">Sa</div><input type="number" id="rhr_sa" placeholder="—" oninput="updateRHRCalcs()"></div>
+      <div class="dc"><div class="dl">So</div><input type="number" id="rhr_so" placeholder="—" oninput="updateRHRCalcs()"></div>
+    </div>
+    <div class="g3">
+      <div class="stat"><div class="stat-v" id="rhr_avg">—</div><div class="stat-l">7-Tage-Mittel</div></div>
+      <div class="fg"><label class="lbl">Baseline RHR (bpm)</label><input type="number" id="rhr_baseline" placeholder="50" oninput="updateRHRCalcs()"></div>
+      <div class="stat"><div class="stat-v" id="rhr_drift">—</div><div class="stat-l">Abweichung Baseline</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- S6: SCHLAF -->
+<section class="section" id="s6">
+  <div class="sh"><span class="si">😴</span><span class="st">Schlaf</span></div>
+  <div class="card">
+    <div class="dg" style="margin-bottom:16px">
+      <div class="dc"><div class="dl">Mo</div><input type="number" id="sl_mo" step="0.5" min="0" max="14" placeholder="—" oninput="updateSleepCalcs()"></div>
+      <div class="dc"><div class="dl">Di</div><input type="number" id="sl_di" step="0.5" min="0" max="14" placeholder="—" oninput="updateSleepCalcs()"></div>
+      <div class="dc"><div class="dl">Mi</div><input type="number" id="sl_mi" step="0.5" min="0" max="14" placeholder="—" oninput="updateSleepCalcs()"></div>
+      <div class="dc"><div class="dl">Do</div><input type="number" id="sl_do" step="0.5" min="0" max="14" placeholder="—" oninput="updateSleepCalcs()"></div>
+      <div class="dc"><div class="dl">Fr</div><input type="number" id="sl_fr" step="0.5" min="0" max="14" placeholder="—" oninput="updateSleepCalcs()"></div>
+      <div class="dc"><div class="dl">Sa</div><input type="number" id="sl_sa" step="0.5" min="0" max="14" placeholder="—" oninput="updateSleepCalcs()"></div>
+      <div class="dc"><div class="dl">So</div><input type="number" id="sl_so" step="0.5" min="0" max="14" placeholder="—" oninput="updateSleepCalcs()"></div>
+    </div>
+    <div class="g3">
+      <div class="stat"><div class="stat-v" id="sl_avg">—</div><div class="stat-l">Schnitt (h)</div></div>
+      <div class="fg">
+        <label class="lbl">Qualität (1–10)</label>
+        <div class="sw-wrap">
+          <input type="range" id="sl_qual" min="1" max="10" value="7" oninput="updateSlider(this)">
+          <span class="sv" id="sl_qual_v">7</span>
+        </div>
+      </div>
+      <div class="fg"><label class="lbl">Konstanz (± min Bettzeit)</label><input type="number" id="sl_konst" placeholder="± 30"></div>
+    </div>
+  </div>
+</section>
+
+<!-- S7: ERNÄHRUNG -->
+<section class="section" id="s7">
+  <div class="sh"><span class="si">🥗</span><span class="st">Ernährung</span></div>
+  <div class="card">
+    <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--rs);padding:10px 14px;margin-bottom:16px;font-size:12px;color:var(--muted)">
+      🎯 Ziel: <strong style="color:var(--text)">2700 kcal · 160g P · 340g C · 80g F</strong>
+    </div>
+    <div class="fg" style="margin-bottom:16px">
+      <label class="lbl">Adherence — Tage im Target (± 100 kcal) — tippen zum Füllen</label>
+      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:8px">
+        <div class="adh-circles" id="adhCircles">
+          <div class="adh-day" data-d="Mo" onclick="toggleAdh(this)"><div class="adh-circle" data-day="Mo">Mo</div></div>
+          <div class="adh-day" data-d="Di" onclick="toggleAdh(this)"><div class="adh-circle" data-day="Di">Di</div></div>
+          <div class="adh-day" data-d="Mi" onclick="toggleAdh(this)"><div class="adh-circle" data-day="Mi">Mi</div></div>
+          <div class="adh-day" data-d="Do" onclick="toggleAdh(this)"><div class="adh-circle" data-day="Do">Do</div></div>
+          <div class="adh-day" data-d="Fr" onclick="toggleAdh(this)"><div class="adh-circle" data-day="Fr">Fr</div></div>
+          <div class="adh-day" data-d="Sa" onclick="toggleAdh(this)"><div class="adh-circle" data-day="Sa">Sa</div></div>
+          <div class="adh-day" data-d="So" onclick="toggleAdh(this)"><div class="adh-circle" data-day="So">So</div></div>
+        </div>
+        <div style="text-align:center">
+          <div class="adh-count" id="adhCount">0</div>
+          <div class="adh-lbl">/ 7 Tage</div>
+        </div>
+      </div>
+    </div>
+    <div class="fg"><label class="lbl">Probleme mit Mengen / Hunger / Sättigung?</label><textarea id="nut_issues" placeholder="Notizen zur Ernährung..."></textarea></div>
+  </div>
+</section>
+
+<!-- S8: SUBJEKTIVE MARKER -->
+<section class="section" id="s8">
+  <div class="sh"><span class="si">🧠</span><span class="st">Subjektive Marker</span></div>
+  <div class="card">
+    <div class="card-title">Tagesgefühl (1–10 · holistisch)</div>
+    <div class="dg" style="margin-bottom:14px">
+      <div class="dc"><div class="dl">Mo</div><input type="range" id="feel_mo" min="1" max="10" value="7" oninput="updateSlider(this);updateFeelCalcs()"><div style="text-align:center;font-family:var(--fd);font-size:14px;color:var(--accent)" id="feel_mo_v">7</div></div>
+      <div class="dc"><div class="dl">Di</div><input type="range" id="feel_di" min="1" max="10" value="7" oninput="updateSlider(this);updateFeelCalcs()"><div style="text-align:center;font-family:var(--fd);font-size:14px;color:var(--accent)" id="feel_di_v">7</div></div>
+      <div class="dc"><div class="dl">Mi</div><input type="range" id="feel_mi" min="1" max="10" value="7" oninput="updateSlider(this);updateFeelCalcs()"><div style="text-align:center;font-family:var(--fd);font-size:14px;color:var(--accent)" id="feel_mi_v">7</div></div>
+      <div class="dc"><div class="dl">Do</div><input type="range" id="feel_do" min="1" max="10" value="7" oninput="updateSlider(this);updateFeelCalcs()"><div style="text-align:center;font-family:var(--fd);font-size:14px;color:var(--accent)" id="feel_do_v">7</div></div>
+      <div class="dc"><div class="dl">Fr</div><input type="range" id="feel_fr" min="1" max="10" value="7" oninput="updateSlider(this);updateFeelCalcs()"><div style="text-align:center;font-family:var(--fd);font-size:14px;color:var(--accent)" id="feel_fr_v">7</div></div>
+      <div class="dc"><div class="dl">Sa</div><input type="range" id="feel_sa" min="1" max="10" value="7" oninput="updateSlider(this);updateFeelCalcs()"><div style="text-align:center;font-family:var(--fd);font-size:14px;color:var(--accent)" id="feel_sa_v">7</div></div>
+      <div class="dc"><div class="dl">So</div><input type="range" id="feel_so" min="1" max="10" value="7" oninput="updateSlider(this);updateFeelCalcs()"><div style="text-align:center;font-family:var(--fd);font-size:14px;color:var(--accent)" id="feel_so_v">7</div></div>
+    </div>
+    <div class="g3" style="margin-bottom:14px">
+      <div class="stat"><div class="stat-v" id="feel_avg">7.0</div><div class="stat-l">Wochen-Schnitt</div></div>
+      <div class="fg"><label class="lbl">Tiefster Tag</label><input type="text" id="feel_low_day" placeholder="Auto-erkannt" readonly style="color:var(--muted)"></div>
+      <div class="fg"><label class="lbl">Grund / Kontext</label><input type="text" id="feel_low_reason" placeholder="Was war los?"></div>
+    </div>
+    <div class="div"></div>
+    <div class="g2">
+      <div class="fg">
+        <label class="lbl">Motivation zum Training</label>
+        <div class="pills" style="flex-direction:column;align-items:flex-start">
+          <span><input type="radio" name="motivation" id="mot1" value="Freude"><label for="mot1">😄 Freue mich jeden Tag</label></span>
+          <span><input type="radio" name="motivation" id="mot2" value="Meistens"><label for="mot2">🙂 Meistens motiviert</label></span>
+          <span><input type="radio" name="motivation" id="mot3" value="Zwingen"><label for="mot3">😐 Muss mich zwingen</label></span>
+          <span><input type="radio" name="motivation" id="mot4" value="Ausgefallen"><label for="mot4">😔 Einheiten ausgefallen</label></span>
+        </div>
+      </div>
+      <div class="fg">
+        <label class="lbl">Libido / Energie allgemein</label>
+        <div class="pills" style="flex-direction:column;align-items:flex-start">
+          <span><input type="radio" name="libido" id="lib1" value="Normal"><label for="lib1">✅ Normal / unverändert</label></span>
+          <span><input type="radio" name="libido" id="lib2" value="Reduziert"><label for="lib2">⚠️ Reduziert</label></span>
+          <span><input type="radio" name="libido" id="lib3" value="Deutlich"><label for="lib3">🔴 Deutlich reduziert</label></span>
+        </div>
+        <div class="fg" style="margin-top:10px"><label class="lbl">Ausgefallene Einheiten (welche?)</label><input type="text" id="mot_missed" placeholder="z.B. Donnerstag Lauf"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- S9: WEHWEHCHEN -->
+<section class="section" id="s9">
+  <div class="sh"><span class="si">🩹</span><span class="st">Wehwehchen &amp; Signale</span></div>
+  <div class="card">
+    <table class="tbl">
+      <thead><tr><th>Bereich</th><th>Intensität (0–10)</th><th>Wann aufgetreten</th><th>Beim</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="rl">Tibia</td>
+          <td><div class="sw-wrap"><input type="range" class="inj-sl" id="inj_tib" min="0" max="10" value="0" oninput="updateInjSlider(this);checkNullWoche()"><span class="sv" id="inj_tib_v" style="font-size:14px">0</span></div></td>
+          <td><input type="text" id="inj_tib_w" placeholder="z.B. Di Abend"></td>
+          <td><div class="ipills"><input type="radio" name="inj_tib_b" id="itb1" value="Laufen"><label for="itb1">Laufen</label><input type="radio" name="inj_tib_b" id="itb2" value="Gym"><label for="itb2">Gym</label><input type="radio" name="inj_tib_b" id="itb3" value="Ruhe"><label for="itb3">Ruhe</label></div></td>
+        </tr>
+        <tr>
+          <td class="rl">Achilles</td>
+          <td><div class="sw-wrap"><input type="range" class="inj-sl" id="inj_ach" min="0" max="10" value="0" oninput="updateInjSlider(this);checkNullWoche()"><span class="sv" id="inj_ach_v" style="font-size:14px">0</span></div></td>
+          <td><input type="text" id="inj_ach_w" placeholder=""></td>
+          <td><div class="ipills"><input type="radio" name="inj_ach_b" id="iab1" value="Laufen"><label for="iab1">Laufen</label><input type="radio" name="inj_ach_b" id="iab2" value="Gym"><label for="iab2">Gym</label><input type="radio" name="inj_ach_b" id="iab3" value="Ruhe"><label for="iab3">Ruhe</label></div></td>
+        </tr>
+        <tr>
+          <td class="rl">Wade</td>
+          <td><div class="sw-wrap"><input type="range" class="inj-sl" id="inj_wad" min="0" max="10" value="0" oninput="updateInjSlider(this);checkNullWoche()"><span class="sv" id="inj_wad_v" style="font-size:14px">0</span></div></td>
+          <td><input type="text" id="inj_wad_w" placeholder=""></td>
+          <td><div class="ipills"><input type="radio" name="inj_wad_b" id="iwb1" value="Laufen"><label for="iwb1">Laufen</label><input type="radio" name="inj_wad_b" id="iwb2" value="Gym"><label for="iwb2">Gym</label><input type="radio" name="inj_wad_b" id="iwb3" value="Ruhe"><label for="iwb3">Ruhe</label></div></td>
+        </tr>
+        <tr>
+          <td class="rl">Knie</td>
+          <td><div class="sw-wrap"><input type="range" class="inj-sl" id="inj_kni" min="0" max="10" value="0" oninput="updateInjSlider(this);checkNullWoche()"><span class="sv" id="inj_kni_v" style="font-size:14px">0</span></div></td>
+          <td><input type="text" id="inj_kni_w" placeholder="vorne/lateral/medial"></td>
+          <td><div class="ipills"><input type="radio" name="inj_kni_b" id="ikb1" value="Laufen"><label for="ikb1">Laufen</label><input type="radio" name="inj_kni_b" id="ikb2" value="Gym"><label for="ikb2">Gym</label><input type="radio" name="inj_kni_b" id="ikb3" value="Ruhe"><label for="ikb3">Ruhe</label></div></td>
+        </tr>
+        <tr>
+          <td class="rl">Hüfte</td>
+          <td><div class="sw-wrap"><input type="range" class="inj-sl" id="inj_hue" min="0" max="10" value="0" oninput="updateInjSlider(this);checkNullWoche()"><span class="sv" id="inj_hue_v" style="font-size:14px">0</span></div></td>
+          <td><input type="text" id="inj_hue_w" placeholder=""></td>
+          <td><div class="ipills"><input type="radio" name="inj_hue_b" id="ihb1" value="Laufen"><label for="ihb1">Laufen</label><input type="radio" name="inj_hue_b" id="ihb2" value="Gym"><label for="ihb2">Gym</label><input type="radio" name="inj_hue_b" id="ihb3" value="Ruhe"><label for="ihb3">Ruhe</label></div></td>
+        </tr>
+        <tr>
+          <td class="rl">Plantarfaszie</td>
+          <td><div class="sw-wrap"><input type="range" class="inj-sl" id="inj_pla" min="0" max="10" value="0" oninput="updateInjSlider(this);checkNullWoche()"><span class="sv" id="inj_pla_v" style="font-size:14px">0</span></div></td>
+          <td><input type="text" id="inj_pla_w" placeholder="Fuß"></td>
+          <td><div class="ipills"><input type="radio" name="inj_pla_b" id="ipb1" value="Laufen"><label for="ipb1">Laufen</label><input type="radio" name="inj_pla_b" id="ipb2" value="Gym"><label for="ipb2">Gym</label><input type="radio" name="inj_pla_b" id="ipb3" value="Ruhe"><label for="ipb3">Ruhe</label></div></td>
+        </tr>
+        <tr>
+          <td class="rl">Rücken</td>
+          <td><div class="sw-wrap"><input type="range" class="inj-sl" id="inj_rue" min="0" max="10" value="0" oninput="updateInjSlider(this);checkNullWoche()"><span class="sv" id="inj_rue_v" style="font-size:14px">0</span></div></td>
+          <td><input type="text" id="inj_rue_w" placeholder="LWS / BWS"></td>
+          <td><div class="ipills"><input type="radio" name="inj_rue_b" id="irb1" value="Laufen"><label for="irb1">Laufen</label><input type="radio" name="inj_rue_b" id="irb2" value="Gym"><label for="irb2">Gym</label><input type="radio" name="inj_rue_b" id="irb3" value="Ruhe"><label for="irb3">Ruhe</label></div></td>
+        </tr>
+        <tr>
+          <td class="rl">Sonstiges</td>
+          <td><div class="sw-wrap"><input type="range" class="inj-sl" id="inj_son" min="0" max="10" value="0" oninput="updateInjSlider(this);checkNullWoche()"><span class="sv" id="inj_son_v" style="font-size:14px">0</span></div></td>
+          <td><input type="text" id="inj_son_w" placeholder="Wo?"></td>
+          <td><div class="ipills"><input type="radio" name="inj_son_b" id="isb1" value="Laufen"><label for="isb1">Laufen</label><input type="radio" name="inj_son_b" id="isb2" value="Gym"><label for="isb2">Gym</label><input type="radio" name="inj_son_b" id="isb3" value="Ruhe"><label for="isb3">Ruhe</label></div></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="null-badge" id="nullBadge">🏆 NULL-WOCHE — Null Wehwehchen! Stark.</div>
+  </div>
+</section>
+
+<!-- S10: PROGRESS -->
+<section class="section" id="s10">
+  <div class="sh"><span class="si">✅</span><span class="st">Progress-Indikatoren</span></div>
+  <div class="card">
+    <div class="pi-list">
+      <label class="pi"><input type="checkbox" id="prog1"><span class="pi-icon">📉</span><span class="pi-text">Easy-HR für gleiche Pace gesunken vs. Vorwoche (Fitness steigt)</span><span class="pi-check">✓</span></label>
+      <label class="pi"><input type="checkbox" id="prog2"><span class="pi-icon">🦵</span><span class="pi-text">Kadenz näher am Zielwert als letzte Woche</span><span class="pi-check">✓</span></label>
+      <label class="pi"><input type="checkbox" id="prog3"><span class="pi-icon">⚡</span><span class="pi-text">Quality-Session komplett durchgezogen wie geplant</span><span class="pi-check">✓</span></label>
+      <label class="pi"><input type="checkbox" id="prog4"><span class="pi-icon">🕐</span><span class="pi-text">Long Run ohne signifikanten Pace-Drop im 2. Teil</span><span class="pi-check">✓</span></label>
+      <label class="pi"><input type="checkbox" id="prog5"><span class="pi-icon">🏋️</span><span class="pi-text">Gym-Performance stabil oder besser als Vorwoche</span><span class="pi-check">✓</span></label>
+    </div>
+  </div>
+</section>
+
+<!-- S11: FRAGEN -->
+<section class="section" id="s11">
+  <div class="sh"><span class="si">💬</span><span class="st">Fragen &amp; Bauchgefühl</span></div>
+  <div class="card">
+    <textarea id="fragen" placeholder="Offene Fragen, Beobachtungen, Bauchgefühl zur Woche..." style="min-height:160px;font-size:14px;line-height:1.7"></textarea>
+  </div>
+</section>
+
+<!-- S12: VORSCHAU -->
+<section class="section" id="s12">
+  <div class="sh"><span class="si">📅</span><span class="st">Vorschau Nächste Woche</span></div>
+  <div class="card">
+    <div class="g4" style="margin-bottom:16px">
+      <div class="fg"><label class="lbl">Nächste KW</label><input type="number" id="next_kw" min="1" max="53" placeholder="KW"></div>
+      <div class="fg"><label class="lbl">Plan-Woche</label><input type="number" id="next_pw" min="1" max="12" placeholder="1–12"></div>
+    </div>
+    <div class="fg" style="margin-bottom:14px"><label class="lbl">Besondere Umstände vorhersehbar? (Reise / Stress / Event)</label><textarea id="next_umst" placeholder="z.B. Dienstreise Di–Do, Training im Hotel..."></textarea></div>
+    <div class="fg"><label class="lbl">Unsicherheiten oder Anpassungswünsche?</label><textarea id="next_unsi" placeholder="Was soll Claude beim nächsten Plan berücksichtigen?"></textarea></div>
+  </div>
+  <div style="text-align:center;padding:20px 0;color:var(--muted);font-size:13px">
+    📤 Am Sonntag ausgefüllt an Claude schicken — Anpassung der kommenden Woche folgt.
+  </div>
+</section>
+
+</main>
+
+<!-- TOAST -->
+<div class="toast" id="toast">✓ Gespeichert</div>
+
+<script>
+// ─── BLOCK INFO ───
+function toggleBlockInfo() {
+  document.getElementById('blockInfo').classList.toggle('vis');
+}
+
+// ─── PACE AUTO-CALC ───
+const paceManual = {r1: false, r2: false, r3: false};
+
+function calcPace(p) {
+  if (paceManual[p]) return;
+  const km = parseFloat(document.getElementById(p + '_km').value);
+  const min = parseFloat(document.getElementById(p + '_min').value);
+  if (!km || !min || km <= 0) return;
+  const secPerKm = (min * 60) / km;
+  const mm = Math.floor(secPerKm / 60);
+  const ss = Math.round(secPerKm % 60);
+  document.getElementById(p + '_pace').value = mm + ':' + String(ss).padStart(2, '0');
+}
+
+function setPaceManual(p) {
+  paceManual[p] = true;
+  const badge = document.getElementById(p + '_pbadge');
+  badge.textContent = '✎ manuell';
+  badge.classList.add('manual');
+}
+
+function togglePaceManual(p) {
+  paceManual[p] = false;
+  const badge = document.getElementById(p + '_pbadge');
+  badge.textContent = '⟳ auto';
+  badge.classList.remove('manual');
+  calcPace(p);
+}
+
+// ─── SLIDER UTILS ───
+function updateSlider(el) {
+  const min = +el.min || 0, max = +el.max || 10, val = +el.value;
+  const pct = ((val - min) / (max - min)) * 100;
+  el.style.setProperty('--pct', pct + '%');
+  const vid = el.id + '_v';
+  const vEl = document.getElementById(vid);
+  if (vEl) vEl.textContent = val;
+}
+
+function updateInjSlider(el) {
+  const val = +el.value;
+  const pct = (val / 10) * 100;
+  const g = Math.round(197 - val * 17);
+  const r = Math.round(34 + val * 22);
+  el.style.setProperty('--pct', pct + '%');
+  el.style.background = `linear-gradient(to right, rgb(${r},${g},78) ${pct}%, var(--border) ${pct}%)`;
+  const vid = el.id + '_v';
+  const vEl = document.getElementById(vid);
+  if (vEl) vEl.textContent = val;
+}
+
+// ─── PLAN-WOCHE BUBBLE ───
+function updatePW(el) {
+  const min = 1, max = 12, val = +el.value;
+  const pct = ((val - min) / (max - min)) * 100;
+  el.style.setProperty('--pct', pct + '%');
+  const bubble = document.getElementById('pwBubble');
+  const wrap = el.parentElement;
+  const ww = wrap.offsetWidth - 20;
+  bubble.textContent = 'Woche ' + val;
+  bubble.style.left = (10 + (ww * pct / 100)) + 'px';
+}
+
+// ─── SPLITS TOGGLE ───
+function toggleSplits(id) {
+  const box = document.getElementById(id);
+  const btn = box.previousElementSibling;
+  box.classList.toggle('open');
+  btn.textContent = box.classList.contains('open') ? '− Intervall-Splits ausblenden' : '+ Intervall-Splits anzeigen';
+}
+
+// ─── DRIFT TOGGLE ───
+function toggleDrift(el) {
+  document.getElementById('gym_drift_text').style.display = el.checked ? 'block' : 'none';
+}
+
+// ─── ADHERENCE ───
+function toggleAdh(el) {
+  el.classList.toggle('filled');
+  updateAdhCount();
+  debouncedSave();
+}
+
+function updateAdhCount() {
+  const count = document.querySelectorAll('.adh-day.filled').length;
+  document.getElementById('adhCount').textContent = count;
+}
+
+// ─── CYCLING TOTAL ───
+function updateCycTotal() {
+  const ids = ['cy_mo_km','cy_mi_km','cy_fr_km','cy_so_km','cy_ex_km'];
+  const total = ids.reduce((s,id) => s + (+document.getElementById(id).value || 0), 0);
+  document.getElementById('cycTotal').textContent = 'Gesamt: ' + (total > 0 ? total.toFixed(1) + ' km' : '— km');
+}
+
+// ─── WEIGHT CALCS ───
+function updateWeightCalcs() {
+  const ids = ['wt_mo','wt_di','wt_mi','wt_do','wt_fr','wt_sa','wt_so'];
+  const vals = ids.map(id => +document.getElementById(id).value).filter(v => v > 0);
+  if (!vals.length) { document.getElementById('wt_avg').textContent = '—'; document.getElementById('wt_drift').textContent = '—'; return; }
+  const avg = vals.reduce((a,b) => a+b,0) / vals.length;
+  document.getElementById('wt_avg').textContent = avg.toFixed(1) + ' kg';
+  const prev = +document.getElementById('wt_prev').value;
+  if (prev) {
+    const drift = avg - prev;
+    const el = document.getElementById('wt_drift');
+    el.textContent = (drift >= 0 ? '+' : '') + (drift * 1000).toFixed(0) + ' g';
+    el.className = 'stat-v ' + (drift > 0.1 ? 'pos' : drift < -0.1 ? 'neg' : '');
+  }
+}
+
+// ─── RHR CALCS ───
+function updateRHRCalcs() {
+  const ids = ['rhr_mo','rhr_di','rhr_mi','rhr_do','rhr_fr','rhr_sa','rhr_so'];
+  const vals = ids.map(id => +document.getElementById(id).value).filter(v => v > 0);
+  if (!vals.length) { document.getElementById('rhr_avg').textContent = '—'; document.getElementById('rhr_drift').textContent = '—'; return; }
+  const avg = vals.reduce((a,b) => a+b,0) / vals.length;
+  document.getElementById('rhr_avg').textContent = Math.round(avg) + ' bpm';
+  const base = +document.getElementById('rhr_baseline').value;
+  if (base) {
+    const drift = avg - base;
+    const el = document.getElementById('rhr_drift');
+    el.textContent = (drift >= 0 ? '+' : '') + drift.toFixed(1) + ' bpm';
+    el.className = 'stat-v ' + (drift > 2 ? 'neg' : drift < -2 ? 'pos' : '');
+  }
+}
+
+// ─── SLEEP CALCS ───
+function updateSleepCalcs() {
+  const ids = ['sl_mo','sl_di','sl_mi','sl_do','sl_fr','sl_sa','sl_so'];
+  const vals = ids.map(id => +document.getElementById(id).value).filter(v => v > 0);
+  if (!vals.length) { document.getElementById('sl_avg').textContent = '—'; return; }
+  const avg = vals.reduce((a,b) => a+b,0) / vals.length;
+  const el = document.getElementById('sl_avg');
+  el.textContent = avg.toFixed(1) + 'h';
+  el.className = 'stat-v ' + (avg >= 7.5 ? 'pos' : avg < 6 ? 'neg' : '');
+}
+
+// ─── FEEL CALCS ───
+const DAYS = ['mo','di','mi','do','fr','sa','so'];
+const DAY_LABELS = ['Mo','Di','Mi','Do','Fr','Sa','So'];
+function updateFeelCalcs() {
+  const vals = DAYS.map(d => +document.getElementById('feel_' + d).value);
+  const avg = vals.reduce((a,b) => a+b,0) / 7;
+  document.getElementById('feel_avg').textContent = avg.toFixed(1);
+  const minVal = Math.min(...vals);
+  const minIdx = vals.indexOf(minVal);
+  document.getElementById('feel_low_day').value = DAY_LABELS[minIdx] + ' (' + minVal + ')';
+}
+
+// ─── NULL WOCHE ───
+function checkNullWoche() {
+  const sliders = document.querySelectorAll('.inj-sl');
+  const allZero = [...sliders].every(s => +s.value === 0);
+  document.getElementById('nullBadge').classList.toggle('vis', allZero);
+}
+
+// ─── PROGRESS ───
+function updateProgress() {
+  const all = document.querySelectorAll('input[type=text], input[type=number], input[type=date], textarea, select');
+  let filled = 0, total = 0;
+  all.forEach(el => {
+    if (el.closest('.splits-box') && !el.closest('.splits-box.open')) return;
+    if (el.id === 'feel_low_day') return;
+    total++;
+    if (el.value && el.value.trim() !== '') filled++;
+  });
+  // Count radios
+  const radioNames = new Set([...document.querySelectorAll('input[type=radio]')].map(r => r.name));
+  radioNames.forEach(name => {
+    total++;
+    if (document.querySelector(`input[type=radio][name="${name}"]:checked`)) filled++;
+  });
+  // Count adherence
+  total += 7;
+  filled += document.querySelectorAll('.adh-day.filled').length;
+  const pct = Math.round((filled / total) * 100);
+  document.getElementById('progressPct').textContent = pct + '%';
+  const circumference = 2 * Math.PI * 18;
+  const offset = circumference - (pct / 100) * circumference;
+  document.getElementById('progressCircle').style.strokeDasharray = circumference;
+  document.getElementById('progressCircle').style.strokeDashoffset = offset;
+}
+
+// ─── SAVE / LOAD ───
+const STORAGE_KEY = 'leon-checkin-v1';
+let saveTimer;
+
+function debouncedSave() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(saveAll, 500);
+}
+
+function saveAll() {
+  const data = {};
+  document.querySelectorAll('input:not([type=radio]):not([type=checkbox]), select, textarea').forEach(el => {
+    if (el.id) data[el.id] = el.value;
+  });
+  document.querySelectorAll('input[type=radio]:checked').forEach(el => {
+    data['__r__' + el.name] = el.value;
+  });
+  document.querySelectorAll('input[type=checkbox]').forEach(el => {
+    if (el.id) data[el.id] = el.checked;
+  });
+  document.querySelectorAll('.adh-day').forEach(el => {
+    data['__adh__' + el.dataset.d] = el.classList.contains('filled');
+  });
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  showToast();
+  updateProgress();
+}
+
+function loadAll() {
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if (!raw) return;
+  let data;
+  try { data = JSON.parse(raw); } catch(e) { return; }
+  Object.entries(data).forEach(([k, v]) => {
+    if (k.startsWith('__r__')) {
+      const name = k.slice(5);
+      const el = document.querySelector(`input[type=radio][name="${name}"][value="${v}"]`);
+      if (el) el.checked = true;
+    } else if (k.startsWith('__adh__')) {
+      const day = k.slice(7);
+      const el = document.querySelector(`.adh-day[data-d="${day}"]`);
+      if (el && v) el.classList.add('filled');
+    } else {
+      const el = document.getElementById(k);
+      if (!el) return;
+      if (el.type === 'checkbox') {
+        el.checked = !!v;
+        if (el.id === 'gym_drift_toggle') toggleDrift(el);
+      } else {
+        el.value = v;
+      }
+    }
+  });
+  // Refresh all computed UI
+  document.querySelectorAll('input[type=range]').forEach(el => {
+    if (el.classList.contains('inj-sl')) updateInjSlider(el);
+    else updateSlider(el);
+  });
+  const pw = document.getElementById('planWoche');
+  if (pw) updatePW(pw);
+  updateAdhCount();
+  updateCycTotal();
+  updateWeightCalcs();
+  updateRHRCalcs();
+  updateSleepCalcs();
+  updateFeelCalcs();
+  checkNullWoche();
+  updateProgress();
+}
+
+// ─── TOAST ───
+let toastTimer;
+function showToast() {
+  const t = document.getElementById('toast');
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// ─── SIDEBAR ACTIVE ───
+function updateActiveNav() {
+  const sections = document.querySelectorAll('.section');
+  const navBtns = document.querySelectorAll('.nb');
+  let activeId = '';
+  sections.forEach(s => {
+    const rect = s.getBoundingClientRect();
+    if (rect.top <= 120) activeId = '#' + s.id;
+  });
+  navBtns.forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('href') === activeId);
+  });
+}
+
+// ─── PDF EXPORT ───
+function exportPDF() {
+  window.print();
+}
+
+// ─── EVENTS ───
+document.addEventListener('input', e => {
+  if (e.target.matches('input[type=range]')) {
+    if (e.target.classList.contains('inj-sl')) updateInjSlider(e.target);
+    else updateSlider(e.target);
+  }
+  debouncedSave();
+  updateProgress();
+});
+document.addEventListener('change', () => { debouncedSave(); updateProgress(); });
+window.addEventListener('scroll', updateActiveNav, { passive: true });
+
+// ─── INIT ───
+document.querySelectorAll('input[type=range]').forEach(el => {
+  if (el.classList.contains('inj-sl')) updateInjSlider(el);
+  else updateSlider(el);
+});
+const pw = document.getElementById('planWoche');
+if (pw) setTimeout(() => updatePW(pw), 100);
+loadAll();
+checkNullWoche();
+updateProgress();
+</script>
+</body>
+</html>
