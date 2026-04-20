@@ -150,8 +150,15 @@ input[type=range].inj-sl::-webkit-slider-thumb{width:14px;height:14px}
 .ph-row{display:flex;align-items:flex-start;gap:24px;flex-wrap:wrap;margin-top:18px}
 
 /* TOAST */
-.toast{position:fixed;bottom:28px;right:28px;background:var(--green);color:#fff;padding:10px 18px;border-radius:var(--r);font-weight:600;font-size:13px;opacity:0;transform:translateY(8px);transition:opacity .3s,transform .3s;z-index:10000;pointer-events:none}
+.toast{position:fixed;bottom:28px;right:28px;background:var(--green);color:#fff;padding:10px 18px;border-radius:var(--r);font-weight:600;font-size:13px;opacity:0;transform:translateY(8px);transition:opacity .3s,transform .3s;z-index:10000;pointer-events:none;display:flex;align-items:center;gap:8px}
 .toast.show{opacity:1;transform:translateY(0)}
+.toast.syncing{background:var(--accent)}
+.toast.error{background:var(--red)}
+/* SYNC INDICATOR */
+.sync-dot{width:8px;height:8px;border-radius:50%;background:var(--green);display:inline-block;margin-left:8px;vertical-align:middle}
+.sync-dot.pending{background:var(--yellow);animation:pulse .8s infinite}
+.sync-dot.error{background:var(--red)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 
 /* EXPORT BTN */
 .ebtn{background:var(--accent);color:#fff;border:none;border-radius:var(--rs);padding:9px 18px;font-family:var(--fd);font-size:14px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:7px}
@@ -272,7 +279,10 @@ input[type=range].inj-sl::-webkit-slider-thumb{width:14px;height:14px}
       <div class="ph-title">Wochen-Check-in</div>
       <div class="ph-sub">Leon · Trainingsprotokoll · Wöchentlicher Bericht</div>
     </div>
-    <button class="ebtn" onclick="exportPDF()">⬇ Als PDF exportieren</button>
+    <div style="display:flex;align-items:center;gap:12px">
+      <span style="font-size:12px;color:var(--muted)">Sync<span class="sync-dot" id="syncDot" title="Synchronisiert"></span></span>
+      <button class="ebtn" onclick="exportPDF()">⬇ Als PDF exportieren</button>
+    </div>
   </div>
   <div class="ph-row">
     <div class="fg" style="min-width:90px">
@@ -902,7 +912,7 @@ input[type=range].inj-sl::-webkit-slider-thumb{width:14px;height:14px}
 </main>
 
 <!-- TOAST -->
-<div class="toast" id="toast">✓ Gespeichert</div>
+<div class="toast" id="toast"></div>
 
 <script>
 // ─── BLOCK INFO ───
@@ -1094,16 +1104,13 @@ function updateProgress() {
   document.getElementById('progressCircle').style.strokeDashoffset = offset;
 }
 
-// ─── SAVE / LOAD ───
+// ─── SYNC CONFIG ───
 const STORAGE_KEY = 'leon-checkin-v1';
-let saveTimer;
+const API_URL = 'https://checkin-api-pearl.vercel.app/api/sync';
+const API_SECRET = '484185ef6f2d1633addfdc598b7d098a';
 
-function debouncedSave() {
-  clearTimeout(saveTimer);
-  saveTimer = setTimeout(saveAll, 500);
-}
-
-function saveAll() {
+// ─── COLLECT / APPLY DATA ───
+function collectData() {
   const data = {};
   document.querySelectorAll('input:not([type=radio]):not([type=checkbox]), select, textarea').forEach(el => {
     if (el.id) data[el.id] = el.value;
@@ -1117,60 +1124,97 @@ function saveAll() {
   document.querySelectorAll('.adh-day').forEach(el => {
     data['__adh__' + el.dataset.d] = el.classList.contains('filled');
   });
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  showToast();
-  updateProgress();
+  return data;
 }
 
-function loadAll() {
-  const raw = localStorage.getItem(STORAGE_KEY);
-  if (!raw) return;
-  let data;
-  try { data = JSON.parse(raw); } catch(e) { return; }
+function applyData(data) {
+  if (!data || !Object.keys(data).length) return;
   Object.entries(data).forEach(([k, v]) => {
     if (k.startsWith('__r__')) {
-      const name = k.slice(5);
-      const el = document.querySelector(`input[type=radio][name="${name}"][value="${v}"]`);
+      const el = document.querySelector(`input[type=radio][name="${k.slice(5)}"][value="${v}"]`);
       if (el) el.checked = true;
     } else if (k.startsWith('__adh__')) {
-      const day = k.slice(7);
-      const el = document.querySelector(`.adh-day[data-d="${day}"]`);
+      const el = document.querySelector(`.adh-day[data-d="${k.slice(7)}"]`);
       if (el && v) el.classList.add('filled');
     } else {
       const el = document.getElementById(k);
       if (!el) return;
-      if (el.type === 'checkbox') {
-        el.checked = !!v;
-        if (el.id === 'gym_drift_toggle') toggleDrift(el);
-      } else {
-        el.value = v;
-      }
+      if (el.type === 'checkbox') { el.checked = !!v; if (el.id === 'gym_drift_toggle') toggleDrift(el); }
+      else el.value = v;
     }
   });
-  // Refresh all computed UI
   document.querySelectorAll('input[type=range]').forEach(el => {
-    if (el.classList.contains('inj-sl')) updateInjSlider(el);
-    else updateSlider(el);
+    el.classList.contains('inj-sl') ? updateInjSlider(el) : updateSlider(el);
   });
   const pw = document.getElementById('planWoche');
   if (pw) updatePW(pw);
-  updateAdhCount();
-  updateCycTotal();
-  updateWeightCalcs();
-  updateRHRCalcs();
-  updateSleepCalcs();
-  updateFeelCalcs();
-  checkNullWoche();
+  updateAdhCount(); updateCycTotal(); updateWeightCalcs();
+  updateRHRCalcs(); updateSleepCalcs(); updateFeelCalcs();
+  checkNullWoche(); updateProgress();
+}
+
+// ─── SAVE / LOAD ───
+let saveTimer;
+
+function debouncedSave() {
+  clearTimeout(saveTimer);
+  setSyncDot('pending');
+  saveTimer = setTimeout(saveAll, 800);
+}
+
+async function saveAll() {
+  const data = collectData();
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  try {
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-sync-secret': API_SECRET },
+      body: JSON.stringify({ data })
+    });
+    if (res.ok) { showToast('✓ Überall gespeichert', 'show'); setSyncDot('ok'); }
+    else { showToast('⚠ Nur lokal gespeichert', 'error'); setSyncDot('error'); }
+  } catch {
+    showToast('⚠ Offline — lokal gespeichert', 'error'); setSyncDot('error');
+  }
   updateProgress();
+}
+
+async function loadAll() {
+  // First apply local data immediately so UI isn't blank
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if (raw) { try { applyData(JSON.parse(raw)); } catch {} }
+
+  // Then fetch from server and apply if newer
+  setSyncDot('pending');
+  try {
+    const res = await fetch(API_URL, { headers: { 'x-sync-secret': API_SECRET } });
+    if (res.ok) {
+      const { data } = await res.json();
+      if (data && Object.keys(data).length) {
+        applyData(data);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      }
+      setSyncDot('ok');
+      showToast('↓ Daten geladen', 'show');
+    } else { setSyncDot('error'); }
+  } catch { setSyncDot('error'); }
+}
+
+// ─── SYNC DOT ───
+function setSyncDot(state) {
+  const dot = document.getElementById('syncDot');
+  dot.className = 'sync-dot' + (state === 'pending' ? ' pending' : state === 'error' ? ' error' : '');
+  dot.title = state === 'ok' ? 'Synchronisiert' : state === 'pending' ? 'Wird gespeichert…' : 'Sync-Fehler';
 }
 
 // ─── TOAST ───
 let toastTimer;
-function showToast() {
+function showToast(msg = '✓ Gespeichert', type = 'show') {
   const t = document.getElementById('toast');
-  t.classList.add('show');
+  t.textContent = msg;
+  t.className = 'toast ' + type;
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 2000);
+  toastTimer = setTimeout(() => t.classList.remove('show', 'syncing', 'error'), 2500);
 }
 
 // ─── SIDEBAR ACTIVE ───
