@@ -510,11 +510,78 @@ input[type=range].inj-sl::-webkit-slider-thumb{width:14px;height:14px}
     <table class="tbl">
       <thead><tr><th>Tag</th><th>km</th><th>Dauer</th><th>Avg HR</th><th>Intensität</th><th>Notizen</th></tr></thead>
       <tbody>
-        <tr><td class="rl">Mo</td><td><input type="number" id="cy_mo_km" step="0.1" oninput="updateCycTotal()"></td><td><input type="text" id="cy_mo_dur" placeholder="hh:mm"></td><td><input type="number" id="cy_mo_hr"></td><td><select id="cy_mo_int"><option value="">—</option><option>Z1</option><option>Z2</option><option>Z3</option></select></td><td><input type="text" id="cy_mo_n" placeholder="Notiz"></td></tr>
-        <tr><td class="rl">Mi</td><td><input type="number" id="cy_mi_km" step="0.1" oninput="updateCycTotal()"></td><td><input type="text" id="cy_mi_dur" placeholder="hh:mm"></td><td><input type="number" id="cy_mi_hr"></td><td><select id="cy_mi_int"><option value="">—</option><option>Z1</option><option>Z2</option><option>Z3</option></select></td><td><input type="text" id="cy_mi_n" placeholder="Notiz"></td></tr>
-        <tr><td class="rl">Fr</td><td><input type="number" id="cy_fr_km" step="0.1" oninput="updateCycTotal()"></td><td><input type="text" id="cy_fr_dur" placeholder="hh:mm"></td><td><input type="number" id="cy_fr_hr"></td><td><select id="cy_fr_int"><option value="">—</option><option>Z1</option><option>Z2</option><option>Z3</option></select></td><td><input type="text" id="cy_fr_n" placeholder="Notiz"></td></tr>
-        <tr><td class="rl">So</td><td><input type="number" id="cy_so_km" step="0.1" oninput="updateCycTotal()"></td><td><input type="text" id="cy_so_dur" placeholder="hh:mm"></td><td><input type="number" id="cy_so_hr"></td><td><select id="cy_so_int"><option value="">—</option><option>Z1</option><option>Z2</option><option>Z3</option></select></td><td><input type="text" id="cy_so_n" placeholder="Notiz"></td></tr>
-        <tr><td class="rl">Weitere</td><td><input type="number" id="cy_ex_km" step="0.1" oninput="updateCycTotal()"></td><td><input type="text" id="cy_ex_dur" placeholder="hh:mm"></td><td><input type="number" id="cy_ex_hr"></td><td><select id="cy_ex_int"><option value="">—</option><option>Z1</option><option>Z2</option><option>Z3</option></select></td><td><input type="text" id="cy_ex_n" placeholder="Notiz"></td></tr>
+        <tr>
+          <td><div class="day-pills" style="gap:3px">
+            <input type="radio" name="cy1_day" id="cy1_mo" value="Mo" checked><label for="cy1_mo">Mo</label>
+            <input type="radio" name="cy1_day" id="cy1_di" value="Di"><label for="cy1_di">Di</label>
+            <input type="radio" name="cy1_day" id="cy1_mi" value="Mi"><label for="cy1_mi">Mi</label>
+            <input type="radio" name="cy1_day" id="cy1_do" value="Do"><label for="cy1_do">Do</label>
+            <input type="radio" name="cy1_day" id="cy1_fr" value="Fr"><label for="cy1_fr">Fr</label>
+            <input type="radio" name="cy1_day" id="cy1_sa" value="Sa"><label for="cy1_sa">Sa</label>
+            <input type="radio" name="cy1_day" id="cy1_so" value="So"><label for="cy1_so">So</label>
+          </div></td>
+          <td><input type="number" id="cy_1_km" step="0.1" oninput="updateCycTotal()"></td>
+          <td><input type="text" id="cy_1_dur" placeholder="hh:mm"></td>
+          <td><input type="number" id="cy_1_hr"></td>
+          <td><select id="cy_1_int"><option value="">—</option><option>Z1</option><option>Z2</option><option>Z3</option></select></td>
+          <td><input type="text" id="cy_1_n" placeholder="Notiz"></td>
+        </tr>
+        <tr>
+          <td><div class="day-pills" style="gap:3px">
+            <input type="radio" name="cy2_day" id="cy2_mo" value="Mo"><label for="cy2_mo">Mo</label>
+            <input type="radio" name="cy2_day" id="cy2_di" value="Di"><label for="cy2_di">Di</label>
+            <input type="radio" name="cy2_day" id="cy2_mi" value="Mi" checked><label for="cy2_mi">Mi</label>
+            <input type="radio" name="cy2_day" id="cy2_do" value="Do"><label for="cy2_do">Do</label>
+            <input type="radio" name="cy2_day" id="cy2_fr" value="Fr"><label for="cy2_fr">Fr</label>
+            <input type="radio" name="cy2_day" id="cy2_sa" value="Sa"><label for="cy2_sa">Sa</label>
+            <input type="radio" name="cy2_day" id="cy2_so" value="So"><label for="cy2_so">So</label>
+          </div></td>
+          <td><input type="number" id="cy_2_km" step="0.1" oninput="updateCycTotal()"></td>
+          <td><input type="text" id="cy_2_dur" placeholder="hh:mm"></td>
+          <td><input type="number" id="cy_2_hr"></td>
+          <td><select id="cy_2_int"><option value="">—</option><option>Z1</option><option>Z2</option><option>Z3</option></select></td>
+          <td><input type="text" id="cy_2_n" placeholder="Notiz"></td>
+        </tr>
+        <tr>
+          <td><div class="day-pills" style="gap:3px">
+            <input type="radio" name="cy3_day" id="cy3_mo" value="Mo"><label for="cy3_mo">Mo</label>
+            <input type="radio" name="cy3_day" id="cy3_di" value="Di"><label for="cy3_di">Di</label>
+            <input type="radio" name="cy3_day" id="cy3_mi" value="Mi"><label for="cy3_mi">Mi</label>
+            <input type="radio" name="cy3_day" id="cy3_do" value="Do"><label for="cy3_do">Do</label>
+            <input type="radio" name="cy3_day" id="cy3_fr" value="Fr" checked><label for="cy3_fr">Fr</label>
+            <input type="radio" name="cy3_day" id="cy3_sa" value="Sa"><label for="cy3_sa">Sa</label>
+            <input type="radio" name="cy3_day" id="cy3_so" value="So"><label for="cy3_so">So</label>
+          </div></td>
+          <td><input type="number" id="cy_3_km" step="0.1" oninput="updateCycTotal()"></td>
+          <td><input type="text" id="cy_3_dur" placeholder="hh:mm"></td>
+          <td><input type="number" id="cy_3_hr"></td>
+          <td><select id="cy_3_int"><option value="">—</option><option>Z1</option><option>Z2</option><option>Z3</option></select></td>
+          <td><input type="text" id="cy_3_n" placeholder="Notiz"></td>
+        </tr>
+        <tr>
+          <td><div class="day-pills" style="gap:3px">
+            <input type="radio" name="cy4_day" id="cy4_mo" value="Mo"><label for="cy4_mo">Mo</label>
+            <input type="radio" name="cy4_day" id="cy4_di" value="Di"><label for="cy4_di">Di</label>
+            <input type="radio" name="cy4_day" id="cy4_mi" value="Mi"><label for="cy4_mi">Mi</label>
+            <input type="radio" name="cy4_day" id="cy4_do" value="Do"><label for="cy4_do">Do</label>
+            <input type="radio" name="cy4_day" id="cy4_fr" value="Fr"><label for="cy4_fr">Fr</label>
+            <input type="radio" name="cy4_day" id="cy4_sa" value="Sa"><label for="cy4_sa">Sa</label>
+            <input type="radio" name="cy4_day" id="cy4_so" value="So" checked><label for="cy4_so">So</label>
+          </div></td>
+          <td><input type="number" id="cy_4_km" step="0.1" oninput="updateCycTotal()"></td>
+          <td><input type="text" id="cy_4_dur" placeholder="hh:mm"></td>
+          <td><input type="number" id="cy_4_hr"></td>
+          <td><select id="cy_4_int"><option value="">—</option><option>Z1</option><option>Z2</option><option>Z3</option></select></td>
+          <td><input type="text" id="cy_4_n" placeholder="Notiz"></td>
+        </tr>
+        <tr>
+          <td><span class="rl">Weitere</span></td>
+          <td><input type="number" id="cy_ex_km" step="0.1" oninput="updateCycTotal()"></td>
+          <td><input type="text" id="cy_ex_dur" placeholder="hh:mm"></td>
+          <td><input type="number" id="cy_ex_hr"></td>
+          <td><select id="cy_ex_int"><option value="">—</option><option>Z1</option><option>Z2</option><option>Z3</option></select></td>
+          <td><input type="text" id="cy_ex_n" placeholder="Notiz"></td>
+        </tr>
       </tbody>
     </table>
   </div>
@@ -933,7 +1000,7 @@ function updateAdhCount() {
 
 // ─── CYCLING TOTAL ───
 function updateCycTotal() {
-  const ids = ['cy_mo_km','cy_mi_km','cy_fr_km','cy_so_km','cy_ex_km'];
+  const ids = ['cy_1_km','cy_2_km','cy_3_km','cy_4_km','cy_ex_km'];
   const total = ids.reduce((s,id) => s + (+document.getElementById(id).value || 0), 0);
   document.getElementById('cycTotal').textContent = 'Gesamt: ' + (total > 0 ? total.toFixed(1) + ' km' : '— km');
 }
